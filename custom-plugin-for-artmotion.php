@@ -3,10 +3,12 @@
 Plugin Name: Custom Menu Item for Artmotion
 Plugin URI: https://github.com/wpwebguru/custom-plugin-for-artmotion
 Description: This plugin for Only Artmotion.com, Otherwise not working
-Version: 1.0
+Version: 1.2
 Author: Web Guru
 Author URI: http://wpwebguru.net/
 (){}
+$default
+the_author_posts_link
 
 */
 
@@ -14,13 +16,31 @@ Author URI: http://wpwebguru.net/
 	define("PLUGINS_URL", plugins_url());
 	
 	//include_once PLUGIN_DIR_PATH.'/inc/menu_item.php';
-	
 
 	
+		add_shortcode('user_logged','custom_user_logged');
+		function custom_user_logged(){
+			
+			
+			if ( is_user_logged_in() ) {
+				$current_user = wp_get_current_user();
+				if ( ($current_user instanceof WP_User) ) {
+					$useravatar = get_avatar( $current_user->ID, 32 );
+					echo $useravatar;
+				}
+			}
+		}
+	
+	
+	
+	
+	
+
 	add_filter('wp_nav_menu_items','custom_menu_item_artmotion', 10, 2);
 	add_filter('wp_nav_menu_items','custom_menu_item_artmotion_two', 10, 2);
 	function custom_menu_item_artmotion( $nav, $args ) {
-		if( $args->theme_location == 'header-menu' )
+		
+	if( $args->theme_location == 'header-menu' ){
 			return $nav."<li class='menu_item_01'>
 	
 						<div class='custom_menu_item'><span class='icon'><a href='javascript:void(0);' onclick='custommenuitem()'><i class='fa fa-bars' aria-hidden='true'></i></a></span></div>
@@ -28,7 +48,7 @@ Author URI: http://wpwebguru.net/
 								<ul>
 									<li><a href='https://shopping.artmotion.com/'>
 										<div class='01'>
-											<span><i class='fa fa-shopping-cart' aria-hidden='true'></i></span><br>
+											<span><i class='_mi _before dashicons dashicons-cart' aria-hidden='true'></i></span><br>
 											<span>Shopping</span>
 										</div>
 									</a></li>
@@ -42,7 +62,7 @@ Author URI: http://wpwebguru.net/
 									
 									<li><a href='https://search.artmotion.com/'>
 										<div class='03'>
-											<span><i class='fa fa-search' aria-hidden='true'></i></span><br>
+											<span><i class='_mi _before dashicons dashicons-search' aria-hidden='true'></i></span><br>
 											<span>Search Engine</span>
 										</div>
 									</a></li>
@@ -79,17 +99,28 @@ Author URI: http://wpwebguru.net/
 							</div>
 
 	</li>";
-
+	}
     return $nav;
 }
 	function custom_menu_item_artmotion_two( $nav, $args ) {
-		if( $args->theme_location == 'header-menu' )
+		
+		if( $args->theme_location == 'header-menu' ){
+			if ( is_user_logged_in() ) {
+				$current_user = wp_get_current_user();
+				if ( ($current_user instanceof WP_User) ) {
+					$useravatar = get_avatar( $current_user->ID, 32 );
+					
+				}
+			}
+			
 			return $nav."<li class='menu_item_02'>
 	
-						<div class='custom_menu_item'><span class='icon'><a href='javascript:void(0);' onclick='custommenuitem()'><i class='fa fa-user-circle-o' aria-hidden='true'></i>
+						<div class='custom_menu_item'><span class='icon'><a href='javascript:void(0);' onclick='custommenuitem()'><i class='fa fa-user-circle' aria-hidden='true'></i><span class='logged-in-user'>$useravatar</span>
 </a></span></div>
 							<div id='toggle_menu_item'>
 								<ul>
+						
+								
 									<li><a href='https://news.artmotion.com/packs/'>
 										<div class='08'>
 											<span><i class='_mi _before dashicons dashicons-exerpt-view' aria-hidden='true'></i></span><br>
@@ -179,9 +210,23 @@ Author URI: http://wpwebguru.net/
 							}
 							.menu_item_01, .menu_item_02 {float: right !important;}
 							
-						</style>
-	
-	</li>";
+							.custom_menu_item .icon .logged-in-user img {
+								border-radius: 50px;
+								width: 25px;
+								height: 25px;
+								vertical-align: middle;
+								display: inherit;
+								border: 1px solid #fff;
+							}
 
+							.logged-in .fa-user-circle{
+								display: none !important;
+							}
+														
+							
+						</style>
+
+	</li>";
+		}
     return $nav;
 }
